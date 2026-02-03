@@ -7,8 +7,11 @@ Mini página estática estilo “will you be my valentine?”
 - El botón **Yes** se agranda en hover.
 - Al clicar **Yes** muestra "YAY! 🎉" y confetti.
 
-## Cambiar la imagen del éxito
-Sustituye `assets/boom-placeholder.svg` por tu GIF/JPG favorito y actualiza el `src` en `index.html` si cambias el nombre.
+## Imagen del éxito
+Ahora usa el mismo GIF que el ejemplo original (Giphy):
+`https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif`
+
+Si quieres usar otra imagen/GIF, cambia el `src` en `index.html`.
 
 ## Deploy
 Es un sitio 100% estático (HTML/CSS/JS). Puedes servirlo con GitHub Pages o cualquier hosting.
