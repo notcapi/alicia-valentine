@@ -6,10 +6,10 @@
   const success = document.getElementById('success');
 
   // --- Make "No" impossible to click ---
-  // Strategy:
-  // - Render the button absolutely inside the buttons container.
-  // - On mouse move, if the cursor gets close, teleport the button to a new position.
-  // - Also move on pointer enter/touchstart so you can't reach it.
+  // Replicate the behavior from https://github.com/devanshulakhani/val:
+  // - When the cursor gets close, move the "No" button away from the cursor
+  //   along the normalized vector (buttonCenter - cursor), with a fixed step.
+  // - Clamp to stay inside the container.
 
   const state = {
     noX: 0,
@@ -23,10 +23,6 @@
     const rect = noBtn.getBoundingClientRect();
     state.noW = rect.width;
     state.noH = rect.height;
-  }
-
-  function rand(min, max) {
-    return Math.random() * (max - min) + min;
   }
 
   function clamp(v, min, max) {
@@ -55,58 +51,61 @@
     setNoPosition(x, y);
   }
 
-  function teleportNo(avoidX, avoidY) {
+  function moveNoAway(cursorX, cursorY) {
     const c = buttons.getBoundingClientRect();
     measureNo();
 
-    // Keep within container padding
-    const pad = 10;
-    const minX = pad;
-    const maxX = c.width - state.noW - pad;
-    const minY = pad;
-    const maxY = c.height - state.noH - pad;
+    // Convert cursor to container-local coordinates
+    const px = cursorX - c.left;
+    const py = cursorY - c.top;
 
-    // Try a few random spots far from cursor
-    let best = { x: rand(minX, maxX), y: rand(minY, maxY), d: -1 };
-    for (let i = 0; i < 12; i++) {
-      const x = rand(minX, maxX);
-      const y = rand(minY, maxY);
-      const dx = x + state.noW / 2 - avoidX;
-      const dy = y + state.noH / 2 - avoidY;
-      const d = Math.hypot(dx, dy);
-      if (d > best.d) best = { x, y, d };
-    }
+    const cx = state.noX + state.noW / 2;
+    const cy = state.noY + state.noH / 2;
 
-    setNoPosition(best.x, best.y);
+    // Vector from cursor -> button center
+    let dx = cx - px;
+    let dy = cy - py;
+    let mag = Math.hypot(dx, dy) || 1;
+    dx /= mag;
+    dy /= mag;
+
+    // Fixed step (similar to the reference: 150)
+    const step = 150;
+
+    let newX = state.noX + dx * step;
+    let newY = state.noY + dy * step;
+
+    newX = clamp(newX, 0, c.width - state.noW);
+    newY = clamp(newY, 0, c.height - state.noH);
+
+    setNoPosition(newX, newY);
   }
 
   function onPointerMove(e) {
     const now = performance.now();
-    // Throttle a bit so it doesn't look glitchy
-    if (now - state.lastMoveAt < 40) return;
+    // Throttle so it looks smooth and not too jittery
+    if (now - state.lastMoveAt < 30) return;
 
-    const c = buttons.getBoundingClientRect();
-    const px = (e.clientX ?? 0) - c.left;
-    const py = (e.clientY ?? 0) - c.top;
+    const b = noBtn.getBoundingClientRect();
+    const dist = Math.hypot(
+      (b.left + b.width / 2) - e.clientX,
+      (b.top + b.height / 2) - e.clientY
+    );
 
-    const cx = state.noX + state.noW / 2;
-    const cy = state.noY + state.noH / 2;
-    const dist = Math.hypot(px - cx, py - cy);
-
-    // Make it impossible: move when cursor gets within a generous radius.
     const triggerRadius = 140;
     if (dist < triggerRadius) {
       state.lastMoveAt = now;
-      teleportNo(px, py);
+      moveNoAway(e.clientX, e.clientY);
     }
   }
 
   function preventClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    // Move away immediately
-    const c = buttons.getBoundingClientRect();
-    teleportNo(c.width / 2, c.height / 2);
+    // Jump away immediately (use current pointer if available)
+    const x = e.clientX ?? (buttons.getBoundingClientRect().left + 1);
+    const y = e.clientY ?? (buttons.getBoundingClientRect().top + 1);
+    moveNoAway(x, y);
     return false;
   }
 
