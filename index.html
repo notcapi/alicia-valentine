@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alicia, will you be my valentine?</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <div class="card" id="card">
+        <div class="mascot" aria-hidden="true">
+          <!-- Simple owl-ish mascot as inline SVG -->
+          <svg width="92" height="92" viewBox="0 0 92 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="92" y2="92" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#f7c791" />
+                <stop offset="1" stop-color="#f2a66b" />
+              </linearGradient>
+            </defs>
+            <circle cx="46" cy="46" r="34" fill="url(#g)" />
+            <circle cx="34" cy="42" r="5" fill="#1f1f1f" />
+            <circle cx="58" cy="42" r="5" fill="#1f1f1f" />
+            <path d="M46 45c3 0 6 2 6 5 0 5-6 10-6 10s-6-5-6-10c0-3 3-5 6-5z" fill="#ff6b9a"/>
+            <path d="M26 26l-7-7" stroke="#d99052" stroke-width="6" stroke-linecap="round"/>
+            <path d="M66 26l7-7" stroke="#d99052" stroke-width="6" stroke-linecap="round"/>
+            <path d="M72 24c8 0 14 6 14 14 0 8-6 14-14 14" fill="none"/>
+          </svg>
+          <div class="heart" aria-hidden="true">❤</div>
+        </div>
+
+        <h1 class="title">alicia will you be my valentine?</h1>
+
+        <div class="buttons" id="buttons">
+          <button id="yesBtn" class="btn yes" type="button">Yes</button>
+          <button id="noBtn" class="btn no" type="button">No</button>
+        </div>
+
+        <p class="hint" id="hint">“No” seems a bit shy</p>
+
+        <!-- Success state -->
+        <section id="success" class="success" aria-live="polite" hidden>
+          <h2 class="yay">YAY! <span aria-hidden="true">🎉</span></h2>
+          <div class="boomWrap">
+            <img
+              class="boom"
+              src="assets/boom-placeholder.svg"
+              alt="Celebration image"
+            />
+          </div>
+        </section>
+
+        <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
